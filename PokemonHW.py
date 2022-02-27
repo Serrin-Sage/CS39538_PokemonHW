@@ -11,7 +11,7 @@ def slow_print(s):
     for char in s:
         sys.stdout.write(char)
         sys.stdout.flush()
-        time.sleep(0.06)
+        time.sleep(0.01)
 
 #========== Player Class =========#
 class Player:
@@ -89,8 +89,8 @@ class MoveList:
 #========== BATTLE SEQUENCE =========#
 def battle_sequence(player, enemy):
     BATTLE = True
+    slow_print(f'{enemy.name} challenges you to a battle!\n')
     while BATTLE:
-        slow_print(f'{enemy.name} challenges you to a battle!\n')
         # time.sleep(1)
         choice = str(input("What do you want to do? \n"
                            "1. Run\n"
@@ -101,30 +101,34 @@ def battle_sequence(player, enemy):
             print("You ran away successfully!\n")
         if choice == "2":
             print("\n========= BATTLE START! ==========\n"
-                  "Choose a Pokemon: ")
+                  "\nChoose a Pokemon: ")
             for i in range(len(player.pokemon_list)):
                 print(f'{i+1}. {player.pokemon_list[i].name}')
             player_choice = int(input('ENTER: '))
             battle_poke = player.pokemon_list[player_choice - 1]
-            print(f'\nGO {battle_poke.name}!\n')
+            slow_print(f'\nGO {battle_poke.name}!\n')
 
             enemy_poke = enemy.pokemon_list[0]
-            print(f'{enemy.name} sent out {enemy_poke.name}!\n')
+            slow_print(f'{enemy.name} sent out {enemy_poke.name}!\n')
             while len(enemy.pokemon_list) > 0:
                 #===== Player attack =====#
-                print("Choose an attack: ")
+                print("\nChoose an option: ")
                 for i in range(len(battle_poke.moves)):
                     print(f'{i+1}. {battle_poke.moves[i].name}')
+                print(f'{i+2}. Run')
                 attack_choice = int(input("ENTER: "))
+                if attack_choice == (i+2):
+                    break
                 poke_attack = battle_poke.moves[attack_choice - 1]
-                print(f'\n{battle_poke.name} used {poke_attack.name}!')
+                slow_print(f'\n{battle_poke.name} used {poke_attack.name}!')
 
                 enemy_poke.health = enemy_poke.health - poke_attack.power
 
-                print(f'{poke_attack.name} did {poke_attack.power} damage!\n'
-                      f'Enemy {enemy_poke.name} health == {enemy_poke.health}')
+                slow_print(f'\n{poke_attack.name} did {poke_attack.power} damage!\n'
+                      f'\nEnemy {enemy_poke.name} health == {enemy_poke.health}\n')
                 if enemy_poke.health <= 0:
-                    print(f'Enemy {enemy_poke.name} fainted\n'
+                    enemy_poke.health = 1
+                    slow_print(f'Enemy {enemy_poke.name} fainted\n'
                           f'You won the battle!\n'
                           f'You received {enemy_poke.name} and {enemy.money_award} from {enemy.name}\n')
                     enemy.fainted.append(enemy_poke)
@@ -135,14 +139,14 @@ def battle_sequence(player, enemy):
                     break
                 else:
                     #===== Enemy Attack =====#
-                    test_attack = len(enemy_poke.moves)
-                    enemy_attack = enemy_poke.moves[1]
-                    print(f'Enemy {enemy_poke.name} used {enemy_attack.name}!\n'
-                          f'It hit {battle_poke.name} for {enemy_attack.power}')
+                    enemy_attack = random.choice(enemy_poke.moves)
+                    slow_print(f'\nEnemy {enemy_poke.name} used {enemy_attack.name}!\n'
+                          f'It hit {battle_poke.name} for {enemy_attack.power} damage\n')
                     battle_poke.health = battle_poke.health - enemy_attack.power
-                    print(f'{battle_poke.name} health == {battle_poke.health}\n')
+                    slow_print(f'\n{battle_poke.name} health == {battle_poke.health}\n')
                     if battle_poke.health <= 0:
-                        print(f'{battle_poke.name} has fainted\n')
+                        battle_poke.health = 0
+                        slow_print(f'{battle_poke.name} has fainted\n')
                         player.fainted.append(battle_poke)
                         player.pokemon_list.remove(battle_poke)
                         if len(player.pokemon_list) == 0:
@@ -151,24 +155,28 @@ def battle_sequence(player, enemy):
 
 #========= Inventory Access =========#
 def access_inv():
-    print(f'INVENTORY:\n'
-          f'1. Pokemon\n'
-          f'2. Bag\n'
-          f'3. Exit')
-    inv_choice = int(input("ENTER: "))
-    if inv_choice == 1:
-        print("Pokemon:")
-        for i in range(len(MAIN_CHARACTER.pokemon_list)):
-            print(f'{i + 1}. {MAIN_CHARACTER.pokemon_list[i].name}')
-        print("Fainted: ")
-        for i in range(len(MAIN_CHARACTER.fainted)):
-            print(f'{i + 1}. {MAIN_CHARACTER.fainted[i].name}')
-    if inv_choice == 2:
-        print(MAIN_CHARACTER.money)
-        for i in range(len(MAIN_CHARACTER.bag)):
-            print(f'{i + 1}. {MAIN_CHARACTER.bag}')
-    if inv_choice == 3:
-        print("\n")
+    while True:
+        print(f'\nINVENTORY:\n'
+              f'1. Pokemon\n'
+              f'2. Bag\n'
+              f'3. Exit')
+        inv_choice = int(input("ENTER: "))
+        if inv_choice == 1:
+            print("\nPokemon List:")
+            for i in range(len(MAIN_CHARACTER.pokemon_list)):
+                print(f'{i + 1}. {MAIN_CHARACTER.pokemon_list[i].name}, {MAIN_CHARACTER.pokemon_list[i].health}')
+            print("Fainted List:")
+            for i in range(len(MAIN_CHARACTER.fainted)):
+                print(f'{i + 1}. {MAIN_CHARACTER.fainted[i].name}\n')
+            time.sleep(1)
+        if inv_choice == 2:
+            print(f'\nYou have {MAIN_CHARACTER.money} coins')
+            for i in range(len(MAIN_CHARACTER.bag)):
+                print(f'{i + 1}. {MAIN_CHARACTER.bag[i]}')
+            time.sleep(1)
+        if inv_choice == 3:
+            print("\n")
+            break
 
 #========== Hospital/Heal Pokemon =========#
 def heal_pokemon(player):
@@ -178,8 +186,9 @@ def heal_pokemon(player):
                      "1. Yes\n"
                      "2. No\n"
                      "ENTER: "))
-    if heal == 1:
-        for i in range(len(player.pokemon_list)):
+
+    if heal == 1 and player.money >= 50:
+        for i in range(len(player.pokemon_list)+1):
             if len(player.fainted) > 0:
                 player.pokemon_list.append(player.fainted[i])
                 player.fainted.remove(player.fainted[i])
@@ -187,7 +196,10 @@ def heal_pokemon(player):
                 health_difference = 270 - player.pokemon_list[i].health
                 player.pokemon_list[i].health = player.pokemon_list[i].health + health_difference
         player.money = player.money - 50
-        print(f'{i+1}. {player.pokemon_list[i].name, player.pokemon_list[i].health}')
+        print("Your Pokemon are fully healed! Come again soon!\n")
+        # print(f'{i+1}. {player.pokemon_list[i].name, player.pokemon_list[i].health}')
+    elif heal == 1 and player.money < 50:
+        print("I'm sorry you don't have enough coins!\n")
     else:
         print("Have a good day! \n")
 
@@ -199,20 +211,28 @@ def find_mew(player, mystery):
           f'Do you want to investigate?\n'
           f'1. No\n'
           f'2. Yes')
-    check_truck = bool(input("ENTER: "))
-    while check_truck:
-        print("It's just a truck, nothing mysterious here")
-        check += 1
-        if check == 4:
-            break
-        else:
-            continue
+    check_truck = int(input("ENTER: "))
+    if check_truck == 1:
+        print("Move Along\n")
+
+    if check_truck == 2:
+        while check < 5:
+            print("It's just a truck, nothing mysterious here\n"
+                  "Check again?\n"
+                  "1. No\n"
+                  "2. Yes")
+            check += 1
+            check_again = int(input("ENTER: "))
+            if check_again == 1:
+                break
+            if check_again == 2:
+                continue
+            if check == 4:
+                print("NOTHING MEWSTERIOUS HERE!")
+
         if check >= 5:
-            print("YOU FOUND MEW UNDER THE TRUCK!")
-        player.pokemon_list.append(mystery)
-        break
-    else:
-        print("Move Along")
+            print("YOU FOUND MEW UNDER THE TRUCK!\n")
+            player.pokemon_list.append(mystery)
 
 #===== Board Creation =====#
 class Board(list):
@@ -336,7 +356,7 @@ class Game(object):
 
 if __name__ == "__main__":
     #========= MOVE LIST =========#
-    ThunderShock = MoveList("Thunder Shock", 40)
+    ThunderShock = MoveList("Thunder Shock", 60)
     QuickAttack = MoveList("Quick Attack", 40)
     Headbutt = MoveList("HeadButt", 50)
     WaterGun = MoveList("Water Gun", 40)
@@ -349,12 +369,12 @@ if __name__ == "__main__":
     RazorLeaf = MoveList("Razor Leaf", 55)
     Tackle = MoveList("Tackle", 40)
     Spark = MoveList("Spark", 65)
-
+    Nothing = MoveList("Nothing", 0)
     HyperBeam = MoveList("Hyper Beam", 150)
 
     #========= POKEMON LIST =========#
     Pika = Pokemon("Pikachu", 250, "Female", "Cute/Aggressive", [ThunderShock, Headbutt, QuickAttack])
-    Squirtle = Pokemon("Squirtle", 270, "Male", "Lazy", [WaterGun, Surf])
+    Squirtle = Pokemon("Squirtle", 270, "Male", "Lazy", [WaterGun, Surf, Nothing])
     Charmander = Pokemon("Charamander", 270, "Female", "Tempermental", [Flamethrower, Scratch, Ember])
     Bulbasaur = Pokemon("Bulbasaur", 270, "Male", "Sleepy", [VineWhip, RazorLeaf])
     Eevee = Pokemon("Eevee", 200, "Female", "Cute", [Tackle, QuickAttack])

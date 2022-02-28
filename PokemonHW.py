@@ -13,7 +13,7 @@ def slow_print(s):
     for char in s:
         sys.stdout.write(char)
         sys.stdout.flush()
-        time.sleep(0.019)
+        time.sleep(0.014)
 
 def slower_print(s):
     for char in s:
@@ -106,7 +106,7 @@ def battle_sequence(player, enemy):
                            "ENTER: "))
         if choice == "1":
             BATTLE = False
-            print("You ran away successfully!\n")
+            slow_print("You ran away successfully!\n")
         if choice == "2":
             print("\n========= BATTLE START! ==========\n"
                   "\nChoose a Pokemon: ")
@@ -120,7 +120,7 @@ def battle_sequence(player, enemy):
             slow_print(f'{enemy.name} sent out {enemy_poke.name}!\n')
             while len(enemy.pokemon_list) > 0:
                 #===== Player attack =====#
-                print("\nChoose an option: ")
+                print("\n==== Choose an option: ====")
                 for i in range(len(battle_poke.moves)):
                     print(f'{i+1}. {battle_poke.moves[i].name}')
                 print(f'{i+2}. Run')
@@ -191,7 +191,7 @@ def access_inv():
 
 #========== Hospital/Heal Pokemon =========#
 def heal_pokemon(player):
-    print("Welcome to the Hospital!\n"
+    slow_print("Welcome to the Hospital!\n"
           "It will be 50 coins to heal all your Pokemon!")
     heal = int(input("Do you want to heal your Pokemon?\n"
                      "1. Yes\n"
@@ -199,20 +199,25 @@ def heal_pokemon(player):
                      "ENTER: "))
 
     if heal == 1 and player.money >= 50:
-        for i in range(len(player.pokemon_list)+1):
+        for i in range(len(player.pokemon_list)):
             if len(player.fainted) > 0:
-                player.pokemon_list.append(player.fainted[i-1])
-                player.fainted.remove(player.fainted[i-1])
-            if player.pokemon_list[i].health < 270:
+                for j in range(len(player.fainted)):
+                    if player.fainted[j].health < 270:
+                        health_difference = 270 - player.fainted[j].health
+                        player.fainted[j].health = player.fainted[j].health + health_difference
+                player.pokemon_list.append(player.fainted[j])
+                player.fainted.remove(player.fainted[j])
+
+            if player.pokemon_list[i].health < 500:
                 health_difference = 270 - player.pokemon_list[i].health
                 player.pokemon_list[i].health = player.pokemon_list[i].health + health_difference
         player.money = player.money - 50
-        print("Your Pokemon are fully healed! Come again soon!\n")
-        # print(f'{i+1}. {player.pokemon_list[i].name, player.pokemon_list[i].health}')
+        slow_print("Your Pokemon are fully healed! Come again soon!\n\n")
+
     elif heal == 1 and player.money < 50:
-        print("I'm sorry you don't have enough coins!\n")
+        slow_print("I'm sorry you don't have enough coins!\n")
     else:
-        print("Have a good day! \n")
+        slow_print("Have a good day! \n")
 
 
 #========== MEWSTERY =========#
@@ -256,9 +261,9 @@ class Game(object):
     Player = "[X]"
     Grass = "[g]"
     Path = "[ ]"
-    Trainer1 = "[T1]"
-    Trainer2 = "[T2]"
-    Trainer3 = "[T3]"
+    Trainer1 = "[S]"
+    Trainer2 = "[B]"
+    Trainer3 = "[G]"
     Item = "[0]"
     Money = "[$]"
     Mewstery = "[?]"
@@ -283,6 +288,9 @@ class Game(object):
         self.current_pos = Game.Start[:]
         self.prev_pos = Game.Start[:]
         self.movement()
+
+    def __del__(self):
+        pass
 
     def movement(self):
         playerX_change, playerY_change = self.prev_pos
@@ -326,9 +334,13 @@ class Game(object):
 
         #========= ITEM PICK UP =========#
         if self.map[playerY][playerX] == Game.Item:
-            slow_print("PICKED UP POKEBALL!\n"
-                       "It contained a Pidgey!\n\n")
-            MAIN_CHARACTER.pokemon_list.append(Pidgey)
+            if (Pidgey in MAIN_CHARACTER.pokemon_list):
+                print("You already picked this up!")
+            else:
+                slow_print("PICKED UP POKEBALL!\n"
+                           "It contained a Pidgey!\n\n")
+                MAIN_CHARACTER.pokemon_list.append(Pidgey)
+
 
 
         #========= HOSPITAL =========#
@@ -367,10 +379,10 @@ class Game(object):
                 break
 
             if len(MAIN_CHARACTER.pokemon_list) >= 5:
-                print("YOU WIN!\n")
+                slower_print("==== YOU WIN! ====\n")
                 print("You collected:")
                 for i in range(len(MAIN_CHARACTER.pokemon_list)):
-                    print(f'{MAIN_CHARACTER.pokemon_list[i].name}')
+                    slow_print(f'{i+1}. {MAIN_CHARACTER.pokemon_list[i].name}\n')
                 break
 
 
@@ -401,7 +413,7 @@ if __name__ == "__main__":
     Pika = Pokemon("Pikachu", 250, "Female", "Cute/Aggressive", [ThunderShock, Headbutt, QuickAttack])
     Squirtle = Pokemon("Squirtle", 270, "Male", "Lazy", [WaterGun, Surf, Bite])
     Charmander = Pokemon("Charamander", 270, "Female", "Tempermental", [Flamethrower, Scratch, Ember])
-    Bulbasaur = Pokemon("Bulbasaur", 10, "Male", "Sleepy", [VineWhip, RazorLeaf, Nothing])
+    Bulbasaur = Pokemon("Bulbasaur", 210, "Male", "Sleepy", [VineWhip, RazorLeaf, Nothing])
     Eevee = Pokemon("Eevee", 200, "Female", "Cute", [Tackle, QuickAttack])
     Voltorb = Pokemon("Voltorb", 225, "Unknown", "Energetic", [ThunderShock, Spark])
     Geodude = Pokemon("Geodude", 210, "Male", "Solid", [Rollout])
@@ -411,8 +423,8 @@ if __name__ == "__main__":
     Mew = Pokemon("Mew", 500, "Unknown", "Unknown", [HyperBeam])
 
     #========== TRAINER LIST ===========#
-    Trainer_One = Trainer("Stinky Pete", 100, 50, "Sweet Potato", [Eevee, Rattata], [])
-    Trainer_Two = Trainer("Billy Bob", 100, 150, "Sweet Potato", [Geodude, Voltorb], [])
+    Trainer_One = Trainer("Stinky Pete", 100, 50, "Bedazzled Stick", [Eevee], [])
+    Trainer_Two = Trainer("Billy Boy", 100, 150, "Fresh Apple", [Geodude, Voltorb], [])
     Trainer_Three = Trainer("Gary", 100, 200, "Friendship Bracelet", [Pika, Charmander], [])
 
     #========== CHARACTER CREATION =========#
@@ -428,7 +440,7 @@ if __name__ == "__main__":
 
     #===== TESTING DELETE LATER =====#
 
-    MAIN_CHARACTER = Player("Pyro", "Male", "Shy", 100, [Player.choose_starter(self='')],
+    MAIN_CHARACTER = Player("Pyro", "Male", "Shy", 20, [Player.choose_starter(self='')],
                             ['Book', 'Letter from Mom'],
                             [])
     print(f'\n{MAIN_CHARACTER}')

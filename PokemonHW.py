@@ -41,16 +41,16 @@ class Player:
                f"The player has {self.bag}.\n"
 
     def choose_name(self):
-        player_name = str(input("Enter your player name: "))
+        player_name = str(input("Enter your players name: "))
         return player_name
     def choose_gender(self):
-        player_gender = str(input("Enter your player gender: "))
+        player_gender = str(input("Enter your players gender: "))
         return player_gender
     def choose_nature(self):
         player_nature = str(input("Enter your players personality: "))
         return player_nature
     def choose_starter(self):
-        poke_choice = int(input("\nChoose Starter Pokemon: \n"
+        poke_choice = int(input("\nChoose Your Starter Pokemon: \n"
               "1. Bulbasaur\n"
               "2. Charmander\n"
               "3. Squirtle\n"
@@ -150,12 +150,12 @@ def battle_sequence(player, enemy):
                     #===== Enemy Attack =====#
                     enemy_attack = random.choice(enemy_poke.moves)
                     slow_print(f'\nEnemy {enemy_poke.name} used {enemy_attack.name}!\n'
-                          f'It hit {battle_poke.name} for {enemy_attack.power} damage\n')
+                               f'It hit {battle_poke.name} for {enemy_attack.power} damage\n')
                     battle_poke.health = battle_poke.health - enemy_attack.power
                     slow_print(f'\n{battle_poke.name} health == {battle_poke.health}\n')
                     if battle_poke.health <= 0:
                         battle_poke.health = 0
-                        slow_print(f'{battle_poke.name} has fainted\n')
+                        slow_print(f'{battle_poke.name} has fainted!\n')
                         player.fainted.append(battle_poke)
                         player.pokemon_list.remove(battle_poke)
                         if len(player.pokemon_list) == 0:
@@ -229,7 +229,7 @@ def find_mew(player, mystery):
           f'2. Yes')
     check_truck = int(input("ENTER: "))
     if check_truck == 1:
-        print("Move Along\n")
+        slow_print("Move Along\n")
 
     if check_truck == 2:
         while check < 5:
@@ -244,10 +244,10 @@ def find_mew(player, mystery):
             if check_again == 2:
                 continue
             if check == 4:
-                print("NOTHING MEWSTERIOUS HERE!")
+                slow_print("NOTHING MEWSTERIOUS HERE!")
 
         if check >= 5:
-            print("YOU FOUND MEW UNDER THE TRUCK!\n")
+            slow_print("YOU FOUND MEW UNDER THE TRUCK!\n")
             player.pokemon_list.append(mystery)
 
 #===== Board Creation =====#
@@ -278,7 +278,6 @@ class Game(object):
         "S",
     ]
     Start = [0, 0]
-    Stop = "stop"
     Inventory = "i"
     Map = [["[ ]"] * 8 for i in range(8)]
 
@@ -315,19 +314,19 @@ class Game(object):
         #=========== BATTLE SEQUENCE CALLED =========#
         if self.map[playerY][playerX] == Game.Trainer1:
             if len(Trainer_One.fainted) > 0:
-                print("You already battled this Trainer")
+                slow_print("You already battled this Trainer\n")
             else:
                 battle_sequence(MAIN_CHARACTER, Trainer_One)
 
         if self.map[playerY][playerX] == Game.Trainer2:
             if len(Trainer_Two.fainted) > 0:
-                print("You already battled this Trainer")
+                slow_print("You already battled this Trainer\n")
             else:
                 battle_sequence(MAIN_CHARACTER, Trainer_Two)
 
         if self.map[playerY][playerX] == Game.Trainer3:
             if len(Trainer_Three.fainted) > 0:
-                print("You already battled this Trainer")
+                slow_print("You already battled this Trainer\n")
             else:
                 battle_sequence(MAIN_CHARACTER, Trainer_Three)
 
@@ -335,11 +334,12 @@ class Game(object):
         #========= ITEM PICK UP =========#
         if self.map[playerY][playerX] == Game.Item:
             if (Pidgey in MAIN_CHARACTER.pokemon_list):
-                print("You already picked this up!")
+                slow_print("You already picked this item up!\n")
             else:
                 slow_print("PICKED UP POKEBALL!\n"
                            "It contained a Pidgey!\n\n")
                 MAIN_CHARACTER.pokemon_list.append(Pidgey)
+                time.sleep(1)
 
 
 
@@ -374,7 +374,7 @@ class Game(object):
             #If Fainted list is greater then 0 and Players pokemon are exhausted then GAME OVER!
             if len(MAIN_CHARACTER.fainted) > 0 and len(MAIN_CHARACTER.pokemon_list) == 0:
                 time.sleep(1)
-                print("All your pokemon have fainted!\n")
+                slow_print("All your pokemon have fainted!\n")
                 slower_print("==== GAME OVER ====")
                 break
 
@@ -413,7 +413,7 @@ if __name__ == "__main__":
     Pika = Pokemon("Pikachu", 250, "Female", "Cute/Aggressive", [ThunderShock, Headbutt, QuickAttack])
     Squirtle = Pokemon("Squirtle", 270, "Male", "Lazy", [WaterGun, Surf, Bite])
     Charmander = Pokemon("Charamander", 270, "Female", "Tempermental", [Flamethrower, Scratch, Ember])
-    Bulbasaur = Pokemon("Bulbasaur", 210, "Male", "Sleepy", [VineWhip, RazorLeaf, Nothing])
+    Bulbasaur = Pokemon("Bulbasaur", 210, "Male", "Sleepy", [VineWhip, RazorLeaf])
     Eevee = Pokemon("Eevee", 200, "Female", "Cute", [Tackle, QuickAttack])
     Voltorb = Pokemon("Voltorb", 225, "Unknown", "Energetic", [ThunderShock, Spark])
     Geodude = Pokemon("Geodude", 210, "Male", "Solid", [Rollout])
@@ -428,22 +428,25 @@ if __name__ == "__main__":
     Trainer_Three = Trainer("Gary", 100, 200, "Friendship Bracelet", [Pika, Charmander], [])
 
     #========== CHARACTER CREATION =========#
-    # my_name = Player.choose_name(self='')
-    # my_gender = Player.choose_gender(self='')
-    # my_nature = Player.choose_nature(self='')
-    # my_starter = Player.choose_starter(self='')
-    #
-    # MAIN_CHARACTER = Player(my_name, my_gender, my_nature, 100, [my_starter], [], [])
-    # print(MAIN_CHARACTER)
+    my_name = Player.choose_name(self='')
+    my_gender = Player.choose_gender(self='')
+    my_nature = Player.choose_nature(self='')
+    my_starter = Player.choose_starter(self='')
+
+    MAIN_CHARACTER = Player(my_name, my_gender, my_nature, 20, [my_starter], [], [])
+    slow_print(f"\n{my_name} is a {my_gender} player and their personality is {my_nature}. \n"
+          f"They start with 100 coins\n"
+          f"Their starter pokemon is {my_starter.name}.\n"
+          f"They start with nothing in their inventory\n")
 
     #========== STARTING INVENTORY =========#
 
     #===== TESTING DELETE LATER =====#
 
-    MAIN_CHARACTER = Player("Pyro", "Male", "Shy", 20, [Player.choose_starter(self='')],
-                            ['Book', 'Letter from Mom'],
-                            [])
-    print(f'\n{MAIN_CHARACTER}')
+    # MAIN_CHARACTER = Player("Pyro", "Male", "Shy", 20, [Player.choose_starter(self='')],
+    #                         ['Book', 'Letter from Mom'],
+    #                         [])
+    # print(f'\n{MAIN_CHARACTER}')
 
     #===== Main Game Loop =====#
     my_game = Game()

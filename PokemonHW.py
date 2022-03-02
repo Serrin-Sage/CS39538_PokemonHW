@@ -2,7 +2,6 @@
 #CSCI 39538
 #Pokemon Assignment
 
-#THIS IS A TEST
 import pprint
 import random
 from random import randint
@@ -278,6 +277,7 @@ class Game(object):
         "S",
     ]
     Start = [0, 0]
+    Exit = "exit"
     Inventory = "i"
     Map = [["[ ]"] * 8 for i in range(8)]
 
@@ -288,8 +288,8 @@ class Game(object):
         self.prev_pos = Game.Start[:]
         self.movement()
 
-    def __del__(self):
-        pass
+    # def __del__(self):
+    #     pass
 
     def movement(self):
         playerX_change, playerY_change = self.prev_pos
@@ -360,6 +360,9 @@ class Game(object):
             print("\n")
             if Moves == "I":
                 access_inv()
+
+            if Moves == "exit":
+                break
 
             if Moves in Game.Controls:
                 direction = Game.Controls.index(Moves)
